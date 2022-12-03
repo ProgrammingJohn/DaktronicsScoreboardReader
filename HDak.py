@@ -1,4 +1,4 @@
-import serial, os, sys
+import serial, os, sys, time
 
 
 football = {
@@ -138,18 +138,25 @@ if __name__ == "__main__":
     LINE_UP = '\033[1A'
     LINE_CLEAR = '\x1b[2K'
     times = 0
+    # end = time.time()
+    end = 0
+    start = 0
+
+    print("")
     while True:
+        
         if times > 3:
             times = 0
             sys.stdout.write("\033[K")
 
-        print('Clock: '+ dak.get('Main Clock Time [mm:ss/ss.t]').strip() + ' | Updating' + '.' * times, end="\r")
-
+        print('Update time: ' + str(round((end - start)*1000)) + 'ms | Clock: '+ dak.get('Main Clock Time [mm:ss/ss.t]').strip() + ' | Updating' + '.' * times, end="\r")
+        start = time.time()
         times += 1
         dak.update()
         for file in txt_files:
             with open(os.getcwd() + f"/txts/{file[0]}", "w") as f:
                 data = dak.get(file[1]).strip()
                 f.write(data if data != "" else str(file[2]))
+        end = time.time()
 
         # print(str(ser.readline()))
